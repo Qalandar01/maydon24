@@ -1,17 +1,15 @@
-package uz.ems.maydon24.entity;
+package uz.ems.maydon24.models.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import uz.ems.maydon24.base.BaseEntity;
+import uz.ems.maydon24.models.base.BaseEntity;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 @Entity

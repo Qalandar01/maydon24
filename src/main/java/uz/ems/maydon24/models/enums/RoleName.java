@@ -1,4 +1,4 @@
-package uz.ems.maydon24.enums;
+package uz.ems.maydon24.models.enums;
 
 public enum RoleName {
     ROLE_USER,
