@@ -13,9 +13,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uz.ems.maydon24.entity.Role;
-import uz.ems.maydon24.entity.User;
-import uz.ems.maydon24.enums.RoleName;
+import uz.ems.maydon24.models.entity.Role;
+import uz.ems.maydon24.models.entity.User;
+import uz.ems.maydon24.models.enums.RoleName;
 
 import javax.crypto.SecretKey;
 import java.util.Arrays;
