@@ -1,4 +1,4 @@
-package uz.ems.maydon24.base;
+package uz.ems.maydon24.models.base;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
