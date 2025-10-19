@@ -1,4 +1,4 @@
-package uz.ems.maydon24.entity;
+package uz.ems.maydon24.models.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -6,8 +6,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
-import uz.ems.maydon24.base.BaseEntity;
-import uz.ems.maydon24.enums.RoleName;
+import uz.ems.maydon24.models.base.BaseEntity;
+import uz.ems.maydon24.models.enums.RoleName;
 
 @Entity
 @AllArgsConstructor
