@@ -5,6 +5,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import uz.ems.maydon24.models.base.BaseEntity;
 import uz.ems.maydon24.models.enums.RoleName;
@@ -14,7 +15,7 @@ import uz.ems.maydon24.models.enums.RoleName;
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @Table(name = "roles")
 public class Role extends BaseEntity implements GrantedAuthority {
 
