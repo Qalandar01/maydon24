@@ -1,5 +1,6 @@
 package uz.ems.maydon24.config.botauth.handle;
 
+import com.pengrad.telegrambot.model.Contact;
 import com.pengrad.telegrambot.model.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,13 @@ public class MessageHandler implements Consumer<Message> {
         String text = message.text();
         User user = userService.getOrCreateUser(message.from());
 
-        if (text.equals("/start")) {
+        if (message.contact() != null) {
+            Contact contact = message.contact();
+            messageService.removeKeyboardAndSendMsg(user.getTelegramId());
+            messageService.sendCode(user);
+            userService.updateUserPhoneById(user.getTelegramId(), contact.phoneNumber());
+
+        } else if (text.equals("/start")) {
             messageService.sendStartMsg(user.getTelegramId(), user.getFullName());
 
         } else log.warn("Unknown message {}", text);
