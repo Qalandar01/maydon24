@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import uz.ems.maydon24.models.entity.User;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
@@ -19,4 +20,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Transactional
     @Query("UPDATE User u SET u.phoneNumber = :phoneNumber WHERE u.telegramId = :userId")
     void updatePhoneByUserId(@Param("userId") Long userId, @Param("phoneNumber") String phoneNumber);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE User u SET u.messageId = :messageId WHERE u.id = :userId")
+    void updateMessageId(@Param("userId") Long userId, @Param("messageId") Integer messageId);
 }
