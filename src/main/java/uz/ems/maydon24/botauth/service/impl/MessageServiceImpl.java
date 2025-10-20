@@ -3,10 +3,12 @@ package uz.ems.maydon24.botauth.service.impl;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.model.request.ReplyKeyboardRemove;
+import com.pengrad.telegrambot.request.DeleteMessage;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.SendResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uz.ems.maydon24.botauth.service.face.ButtonService;
 import uz.ems.maydon24.botauth.service.face.MessageService;
@@ -15,6 +17,7 @@ import uz.ems.maydon24.repository.UserRepository;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
@@ -50,11 +53,26 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Transactional
-    public void sendCode(User user) {
-        Integer oneTimeCode = botAuthUserService.generateOneTimeCode();
-        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(5);
+    public void sendCode(User user, Integer oneTimeCode) {
+        String loginUrl = "https://gourmet.uz/login?code=" + oneTimeCode;
+        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(2);
+
+        if (oneTimeCode == null) {
+            oneTimeCode = botAuthUserService.generateOneTimeCode();
+        }
+
+        if (oneTimeCode != null) {
+            try {
+                telegramBot.execute(new DeleteMessage(user.getTelegramId(), user.getMessageId()));
+            } catch (NullPointerException e) {
+                log.warn("Message id null on delete, user {}", user.getTelegramId());
+            }
+        }
+
         SendResponse response = telegramBot.execute(new SendMessage(user.getTelegramId(),
-                        "🔒 Kod: <pre>" + oneTimeCode + "</pre>" + "\n\n\uD83D\uDD17 Bosing va Kiring: \nfutbolchi/login"
+                "🔒 Kod: \n<pre>" + oneTimeCode + "</pre>"
+                        + "\n\n\uD83D\uDD17 Bosing va Kiring: "
+                        + "<a href=\"" + loginUrl + "\">gourmet.uz/login</a>"
                 )
                         .parseMode(ParseMode.HTML)
                         .replyMarkup(buttonService.sendRenewCodeBtn())

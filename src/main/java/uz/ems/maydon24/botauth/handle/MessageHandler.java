@@ -9,6 +9,7 @@ import uz.ems.maydon24.botauth.service.face.MessageService;
 import uz.ems.maydon24.botauth.service.face.UserService;
 import uz.ems.maydon24.models.entity.User;
 
+import java.time.LocalDateTime;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -27,11 +28,14 @@ public class MessageHandler implements Consumer<Message> {
         if (message.contact() != null) {
             Contact contact = message.contact();
             messageService.removeKeyboardAndSendMsg(user.getTelegramId());
-            messageService.sendCode(user);
+            messageService.sendCode(user, null);
             userService.updateUserPhoneById(user.getTelegramId(), contact.phoneNumber());
 
         } else if (text.equals("/start")) {
-            messageService.sendStartMsg(user.getTelegramId(), user.getFullName());
+            if (user.getVerifyCodeExpiration() != null && user.getVerifyCodeExpiration().isAfter(LocalDateTime.now())) {
+                messageService.sendCode(user, user.getVerifyCode());
+
+            } else messageService.sendStartMsg(user.getTelegramId(), user.getFullName());
 
         } else log.warn("Unknown message {}", text);
     }
