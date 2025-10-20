@@ -29,9 +29,6 @@ public class UserServiceImpl implements UserService {
     }
 
     private User createNewUser(com.pengrad.telegrambot.model.User telegramUser) {
-        Integer code = generateOneTimeCode();
-        LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(2);
-
         // Default role
         Role roleUser = roleRepository.findByName(RoleName.ROLE_USER)
                 .orElseThrow(() -> new RuntimeException("Default role ROLE_USER not found!"));
@@ -46,8 +43,6 @@ public class UserServiceImpl implements UserService {
                 .phoneNumber(telegramUser.id().toString())
                 .fullName(fullName)
                 .visibility(true)
-                .verifyCode(code)
-                .verifyCodeExpiration(expiresAt)
                 .roles(Collections.singleton(roleUser))
                 .build();
 
