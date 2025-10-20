@@ -1,4 +1,4 @@
-package uz.ems.maydon24.config.botauth.config;
+package uz.ems.maydon24.botauth.config;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
@@ -9,8 +9,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
-import uz.ems.maydon24.config.botauth.handle.CallbackHandler;
-import uz.ems.maydon24.config.botauth.handle.MessageHandler;
+import uz.ems.maydon24.botauth.handle.CallbackHandler;
+import uz.ems.maydon24.botauth.handle.MessageHandler;
 
 import java.util.concurrent.ExecutorService;
 

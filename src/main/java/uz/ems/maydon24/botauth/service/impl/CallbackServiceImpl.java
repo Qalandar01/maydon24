@@ -1,4 +1,4 @@
-package uz.ems.maydon24.config.botauth.service.impl;
+package uz.ems.maydon24.botauth.service.impl;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.request.ParseMode;
@@ -7,8 +7,8 @@ import com.pengrad.telegrambot.response.SendResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import uz.ems.maydon24.config.botauth.service.face.ButtonService;
-import uz.ems.maydon24.config.botauth.service.face.CallbackService;
+import uz.ems.maydon24.botauth.service.face.ButtonService;
+import uz.ems.maydon24.botauth.service.face.CallbackService;
 import uz.ems.maydon24.models.entity.User;
 import uz.ems.maydon24.repository.UserRepository;
 
