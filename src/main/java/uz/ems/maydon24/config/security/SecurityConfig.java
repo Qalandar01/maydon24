@@ -21,6 +21,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.List;
 
+import static uz.ems.maydon24.utils.Constants.*;
+
 @EnableMethodSecurity
 @Configuration
 @RequiredArgsConstructor
@@ -33,12 +35,32 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
         http.authorizeHttpRequests(auth ->
-                auth.requestMatchers("/","/index.html").permitAll()
-                .anyRequest().authenticated()
+                auth
+                        .requestMatchers(
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**"
+                        ).permitAll()
+
+                        .requestMatchers(
+                                "GET",
+                                "/","/index.html"
+                        ).permitAll()
+
+                        .requestMatchers(
+                                "POST",
+                                API + V1 + AUTH + "/code/*"
+                        ).permitAll()
+
+                        .requestMatchers(
+                                "GET",
+                                API + V1 + ATTACHMENT + "/*"
+                        ).permitAll()
+
+                        .anyRequest().authenticated()
         );
 
         http.addFilterBefore(mySecurityFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 
@@ -47,7 +69,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000", "http://localhost:3001", "http://192.168.1.2:3000"
+                "http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://192.168.1.2:3000",
+                "https://gourmet.uz"
         ));
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
