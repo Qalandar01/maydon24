@@ -1,0 +1,60 @@
+package uz.ems.maydon24.config.botauth.service.impl;
+
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import uz.ems.maydon24.config.botauth.service.face.UserService;
+import uz.ems.maydon24.models.entity.Role;
+import uz.ems.maydon24.models.entity.User;
+import uz.ems.maydon24.models.enums.RoleName;
+import uz.ems.maydon24.repository.RoleRepository;
+import uz.ems.maydon24.repository.UserRepository;
+
+import java.security.SecureRandom;
+import java.time.LocalDateTime;
+import java.util.Collections;
+
+@Service("botAuthUserService")
+@RequiredArgsConstructor
+public class UserServiceImpl implements UserService {
+
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+
+    @Override
+    @Transactional
+    public User getOrCreateUser(com.pengrad.telegrambot.model.User telegramUser) {
+        return userRepository.findByTelegramId(telegramUser.id())
+                .orElseGet(() -> createNewUser(telegramUser));
+    }
+
+    private User createNewUser(com.pengrad.telegrambot.model.User telegramUser) {
+        Integer code = generateOneTimeCode();
+        LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(2);
+
+        // Default role
+        Role roleUser = roleRepository.findByName(RoleName.ROLE_USER)
+                .orElseThrow(() -> new RuntimeException("Default role ROLE_USER not found!"));
+
+        String fullName = telegramUser.lastName() != null
+                ? telegramUser.firstName() + " " + telegramUser.lastName()
+                : telegramUser.firstName();
+
+        User user = User.builder()
+                .telegramId(telegramUser.id())
+                .telegramUsername(telegramUser.username())
+                .phoneNumber(telegramUser.id().toString())
+                .fullName(fullName)
+                .visibility(true)
+                .verifyCode(code)
+                .verifyCodeExpiration(expiresAt)
+                .roles(Collections.singleton(roleUser))
+                .build();
+
+        return userRepository.save(user);
+    }
+
+    public Integer generateOneTimeCode() {
+        return 100000 + new SecureRandom().nextInt(900000);
+    }
+}
