@@ -56,6 +56,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    public void updateOneTimeCode(Long userId) {
+        Integer code = generateOneTimeCode();
+        LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(2);
+        userRepository.updateVerifyCodeAndExpiration(userId, code, expiresAt);
+    }
+
+    @Override
+    @Transactional
+    public void updateTgUser(Long userId, User updatedUser) {
+        userRepository.findById(userId).ifPresent(user -> {
+            user.setFullName(updatedUser.getFullName());
+            user.setTelegramUsername(updatedUser.getTelegramUsername());
+            user.setPhoneNumber(updatedUser.getPhoneNumber());
+            userRepository.save(user);
+        });
+    }
+
+    @Override
+    @Transactional
     public void updateUserPhoneById(Long userId, String phoneNumber) {
         userRepository.updatePhoneByUserId(userId, phoneNumber);
     }
