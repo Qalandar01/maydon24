@@ -11,6 +11,4 @@ public interface MessageService {
     void removeKeyboardAndSendMsg(Long telegramId);
 
     void sendCode(User user);
-
-    void renewCode(User user);
 }

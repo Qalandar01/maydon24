@@ -6,7 +6,7 @@ import com.pengrad.telegrambot.request.AnswerCallbackQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uz.ems.maydon24.config.botauth.service.face.MessageService;
+import uz.ems.maydon24.config.botauth.service.face.CallbackService;
 import uz.ems.maydon24.config.botauth.service.face.UserService;
 import uz.ems.maydon24.models.entity.User;
 
@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 public class CallbackHandler implements Consumer<CallbackQuery> {
 
     private final UserService userService;
-    private final MessageService messageService;
+    private final CallbackService callbackService;
     private final TelegramBot telegramBot;
 
     @Override
@@ -36,7 +36,7 @@ public class CallbackHandler implements Consumer<CallbackQuery> {
                 return;
             }
 
-            messageService.renewCode(user);
+            callbackService.renewCode(user);
         }
     }
 }

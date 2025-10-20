@@ -63,20 +63,4 @@ public class MessageServiceImpl implements MessageService {
         userRepository.updateVerifyCodeAndExpiration(user.getTelegramId(), oneTimeCode, expirationTime);
         userRepository.updateMessageId(user.getTelegramId(), response.message().messageId());
     }
-
-    @Transactional
-    public void renewCode(User user) {
-        Integer oneTimeCode = botAuthUserService.generateOneTimeCode();
-        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(5);
-
-        SendResponse response = (SendResponse) telegramBot.execute(new EditMessageText(
-                user.getTelegramId(),
-                user.getMessageId(),
-                "🔒 Kod: \n<pre>" + oneTimeCode + "</pre>" + "\n\n\uD83D\uDD17 Bosing va Kiring: \nfutbolchi/login"
-                ).parseMode(ParseMode.HTML)
-                .replyMarkup(buttonService.sendRenewCodeBtn())
-        );
-        userRepository.updateVerifyCodeAndExpiration(user.getTelegramId(), oneTimeCode, expirationTime);
-        userRepository.updateMessageId(user.getTelegramId(), response.message().messageId());
-    }
 }
