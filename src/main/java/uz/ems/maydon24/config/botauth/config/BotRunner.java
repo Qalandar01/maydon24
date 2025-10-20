@@ -9,6 +9,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
+import uz.ems.maydon24.config.botauth.handle.CallbackHandler;
 import uz.ems.maydon24.config.botauth.handle.MessageHandler;
 
 import java.util.concurrent.ExecutorService;
@@ -20,6 +21,7 @@ public class BotRunner implements CommandLineRunner {
     private final TelegramBot bot;
     private final ExecutorService executorService;
     private final MessageHandler messageHandler;
+    private final CallbackHandler callbackHandler;
 
     @PostConstruct
     public void deleteWebhookIfExists() {
@@ -38,6 +40,9 @@ public class BotRunner implements CommandLineRunner {
                 executorService.execute(() -> {
                     if (update.message() != null) {
                         messageHandler.accept(update.message());
+
+                    } else if (update.callbackQuery() != null) {
+                        callbackHandler.accept(update.callbackQuery());
 
                     } else System.err.println("Unknown message -> " + update);
                 });
