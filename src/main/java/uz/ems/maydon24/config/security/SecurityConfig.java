@@ -3,6 +3,7 @@ package uz.ems.maydon24.config.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -36,27 +37,10 @@ public class SecurityConfig {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
         http.authorizeHttpRequests(auth ->
                 auth
-                        .requestMatchers(
-                                "/swagger-ui.html",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**"
-                        ).permitAll()
-
-                        .requestMatchers(
-                                "GET",
-                                "/","/index.html"
-                        ).permitAll()
-
-                        .requestMatchers(
-                                "POST",
-                                API + V1 + AUTH + "/code/*"
-                        ).permitAll()
-
-                        .requestMatchers(
-                                "GET",
-                                API + V1 + ATTACHMENT + "/*"
-                        ).permitAll()
-
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/","/index.html").permitAll()
+                        .requestMatchers(HttpMethod.POST, API + V1 + AUTH + CODE + WAY_ONE).permitAll()
+                        .requestMatchers(HttpMethod.GET, API + V1 + ATTACHMENT + "/*").permitAll()
                         .anyRequest().authenticated()
         );
 
