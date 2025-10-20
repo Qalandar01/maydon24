@@ -25,13 +25,18 @@ public class CallbackServiceImpl implements CallbackService {
     @Transactional
     public void renewCode(User user) {
         Integer oneTimeCode = botAuthUserService.generateOneTimeCode();
-        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(5);
+        LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(2);
+
+        String loginUrl = "https://gourmet.uz/login?code=" + oneTimeCode;
 
         SendResponse response = (SendResponse) telegramBot.execute(new EditMessageText(
                         user.getTelegramId(),
                         user.getMessageId(),
-                        "🔒 Kod: \n<pre>" + oneTimeCode + "</pre>" + "\n\n\uD83D\uDD17 Bosing va Kiring: \nfutbolchi/login"
-                ).parseMode(ParseMode.HTML)
+                        "🔒 Kod: \n<pre>" + oneTimeCode + "</pre>"
+                                + "\n\n\uD83D\uDD17 Bosing va Kiring: "
+                                + "<a href=\"" + loginUrl + "\">gourmet.uz/login</a>"
+                )
+                        .parseMode(ParseMode.HTML)
                         .replyMarkup(buttonService.sendRenewCodeBtn())
         );
         userRepository.updateVerifyCodeAndExpiration(user.getTelegramId(), oneTimeCode, expirationTime);
