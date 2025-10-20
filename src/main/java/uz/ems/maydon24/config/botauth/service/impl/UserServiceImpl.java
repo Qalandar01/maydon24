@@ -54,6 +54,13 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+    @Override
+    @Transactional
+    public void updateUserPhoneById(Long userId, String phoneNumber) {
+        userRepository.updatePhoneByUserId(userId, phoneNumber);
+    }
+
+    @Override
     public Integer generateOneTimeCode() {
         return 100000 + new SecureRandom().nextInt(900000);
     }

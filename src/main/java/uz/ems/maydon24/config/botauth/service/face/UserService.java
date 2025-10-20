@@ -8,4 +8,7 @@ public interface UserService {
 
     User getOrCreateUser(com.pengrad.telegrambot.model.User tgUser);
 
+    Integer generateOneTimeCode();
+
+    void updateUserPhoneById(Long userId, String phoneNumber);
 }

@@ -1,6 +1,8 @@
 package uz.ems.maydon24.repository;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.*;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import uz.ems.maydon24.models.entity.User;
 
@@ -12,4 +14,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByPhoneNumber(String phoneNumber);
 
     Optional<User> findByTelegramId(Long telegramId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE User u SET u.phoneNumber = :phoneNumber WHERE u.telegramId = :userId")
+    void updatePhoneByUserId(@Param("userId") Long userId, @Param("phoneNumber") String phoneNumber);
 }
