@@ -13,4 +13,9 @@ public class ButtonServiceImpl implements ButtonService {
                 new KeyboardButton("Kontaktni ulashish").requestContact(true)
         ).resizeKeyboard(true);
     }
+
+    @Override
+    public InlineKeyboardMarkup sendRenewCodeBtn() {
+        return new InlineKeyboardMarkup(new InlineKeyboardButton("🔄Yangilash").callbackData("renew_code"));
+    }
 }
