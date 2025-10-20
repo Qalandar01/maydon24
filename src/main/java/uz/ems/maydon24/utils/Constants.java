@@ -2,6 +2,7 @@ package uz.ems.maydon24.utils;
 
 public interface Constants {
     String WAY_ALL = "/**";
+    String WAY_ONE = "/*";
 
     String API = "/api";
     //String VERSION = "/version";
