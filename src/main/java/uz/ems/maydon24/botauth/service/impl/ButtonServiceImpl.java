@@ -1,8 +1,8 @@
-package uz.ems.maydon24.config.botauth.service.impl;
+package uz.ems.maydon24.botauth.service.impl;
 
 import com.pengrad.telegrambot.model.request.*;
 import org.springframework.stereotype.Service;
-import uz.ems.maydon24.config.botauth.service.face.ButtonService;
+import uz.ems.maydon24.botauth.service.face.ButtonService;
 
 @Service
 public class ButtonServiceImpl implements ButtonService {

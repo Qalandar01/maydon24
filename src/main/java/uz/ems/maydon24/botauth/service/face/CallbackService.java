@@ -1,4 +1,4 @@
-package uz.ems.maydon24.config.botauth.service.face;
+package uz.ems.maydon24.botauth.service.face;
 
 import org.springframework.stereotype.Service;
 import uz.ems.maydon24.models.entity.User;

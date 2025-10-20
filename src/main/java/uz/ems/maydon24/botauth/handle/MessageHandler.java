@@ -1,12 +1,12 @@
-package uz.ems.maydon24.config.botauth.handle;
+package uz.ems.maydon24.botauth.handle;
 
 import com.pengrad.telegrambot.model.Contact;
 import com.pengrad.telegrambot.model.Message;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uz.ems.maydon24.config.botauth.service.face.MessageService;
-import uz.ems.maydon24.config.botauth.service.face.UserService;
+import uz.ems.maydon24.botauth.service.face.MessageService;
+import uz.ems.maydon24.botauth.service.face.UserService;
 import uz.ems.maydon24.models.entity.User;
 
 import java.util.function.Consumer;

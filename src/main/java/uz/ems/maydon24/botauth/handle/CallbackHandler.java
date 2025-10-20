@@ -1,4 +1,4 @@
-package uz.ems.maydon24.config.botauth.handle;
+package uz.ems.maydon24.botauth.handle;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.CallbackQuery;
@@ -6,8 +6,8 @@ import com.pengrad.telegrambot.request.AnswerCallbackQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uz.ems.maydon24.config.botauth.service.face.CallbackService;
-import uz.ems.maydon24.config.botauth.service.face.UserService;
+import uz.ems.maydon24.botauth.service.face.CallbackService;
+import uz.ems.maydon24.botauth.service.face.UserService;
 import uz.ems.maydon24.models.entity.User;
 
 import java.time.LocalDateTime;

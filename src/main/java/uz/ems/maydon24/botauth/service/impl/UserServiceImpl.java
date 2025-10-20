@@ -1,9 +1,9 @@
-package uz.ems.maydon24.config.botauth.service.impl;
+package uz.ems.maydon24.botauth.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uz.ems.maydon24.config.botauth.service.face.UserService;
+import uz.ems.maydon24.botauth.service.face.UserService;
 import uz.ems.maydon24.models.entity.Role;
 import uz.ems.maydon24.models.entity.User;
 import uz.ems.maydon24.models.enums.RoleName;

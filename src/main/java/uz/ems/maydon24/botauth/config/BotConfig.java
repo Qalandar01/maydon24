@@ -1,4 +1,4 @@
-package uz.ems.maydon24.config.botauth.config;
+package uz.ems.maydon24.botauth.config;
 
 import com.pengrad.telegrambot.TelegramBot;
 import org.springframework.beans.factory.annotation.Value;
