@@ -3,6 +3,7 @@ package uz.ems.maydon24.config.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -21,6 +22,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.List;
 
+import static uz.ems.maydon24.utils.Constants.*;
+
 @EnableMethodSecurity
 @Configuration
 @RequiredArgsConstructor
@@ -33,11 +36,15 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
         http.authorizeHttpRequests(auth ->
-                auth.anyRequest().authenticated()
+                auth
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/","/index.html").permitAll()
+                        .requestMatchers(HttpMethod.POST, API + V1 + AUTH + CODE + WAY_ONE).permitAll()
+                        .requestMatchers(HttpMethod.GET, API + V1 + ATTACHMENT + "/*").permitAll()
+                        .anyRequest().authenticated()
         );
 
         http.addFilterBefore(mySecurityFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 
@@ -46,7 +53,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000", "http://localhost:3001", "http://192.168.1.2:3000"
+                "http://localhost:3000", "http://localhost:3001", "http://localhost:3002", "http://192.168.1.2:3000",
+                "https://gourmet.uz"
         ));
 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));

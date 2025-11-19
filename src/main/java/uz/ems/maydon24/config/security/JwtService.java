@@ -73,7 +73,7 @@ public class JwtService {
         return Jwts.builder()
                 .setSubject(String.valueOf(user.getId()))
                 .claim("fullName", user.getFullName())
-                .claim("phone", user.getPhone())
+                .claim("phone", user.getPhoneNumber())
                 .claim("visibility", user.isEnabled())
                 .claim("roles", roles)
                 .setIssuedAt(new Date())
@@ -98,7 +98,7 @@ public class JwtService {
 
         return User.builder()
                 .id(id)
-                .phone(phone)
+                .phoneNumber(phone)
                 .fullName(fullName)
                 .visibility(visibility)
                 .roles(authorities)

@@ -1,8 +1,6 @@
 package uz.ems.maydon24.models.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLRestriction;
@@ -10,30 +8,40 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import uz.ems.maydon24.models.base.BaseEntity;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Set;
 
-@Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 @SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
 @Table(name = "users")
 @SQLRestriction("visibility=true")
 public class User extends BaseEntity implements UserDetails {
 
-    private String tgUsername;
+    @Column(nullable = false)
+    private Long telegramId;
 
+    private String telegramUsername;
+
+    @Column(nullable = false)
     private String fullName;
 
-    private String phone;
+    @Column(nullable = false)
+    private String phoneNumber;
 
     private Integer verifyCode;
 
+    private LocalDateTime verifyCodeExpiration;
+
+    @Builder.Default
+    @Column(nullable = false)
     private boolean visibility = true;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
 
     @Override
@@ -53,6 +61,6 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public String getUsername(){
-        return this.phone;
+        return this.phoneNumber;
     }
 }
