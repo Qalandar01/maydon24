@@ -29,8 +29,6 @@ public class User extends BaseEntity implements UserDetails {
 
     private String phone;
 
-    private Integer messageId;
-
     private Integer verifyCode;
 
     private boolean visibility = true;
