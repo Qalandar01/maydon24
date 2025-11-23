@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import uz.ems.maydon24.models.entity.Role;
-import uz.ems.maydon24.models.enums.RoleName;
+import uz.ems.maydon24.models.enums.Roles;
 import uz.ems.maydon24.repository.RoleRepository;
 
 import java.util.Arrays;
@@ -24,12 +24,12 @@ public class DefaultBase implements CommandLineRunner {
 
     private void createDefaultRoles() {
         // Default roles
-        Set<RoleName> defaultRoles = new HashSet<>(Arrays.asList(
-                RoleName.ROLE_USER,
-                RoleName.ROLE_ADMIN
+        Set<Roles> defaultRoles = new HashSet<>(Arrays.asList(
+                Roles.ROLE_USER,
+                Roles.ROLE_ADMIN
         ));
 
-        for (RoleName roleName : defaultRoles) {
+        for (Roles roleName : defaultRoles) {
             boolean exists = roleRepository.findByName(roleName).isPresent();
             if (!exists) {
                 Role role = Role.builder()

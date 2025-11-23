@@ -12,7 +12,7 @@ import uz.ems.maydon24.models.enums.MediaType;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
+@Builder
 public class AreaMedia extends BaseEntity {
 
     @ManyToOne

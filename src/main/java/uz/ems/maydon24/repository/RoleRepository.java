@@ -3,7 +3,7 @@ package uz.ems.maydon24.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import uz.ems.maydon24.models.entity.Role;
-import uz.ems.maydon24.models.enums.RoleName;
+import uz.ems.maydon24.models.enums.Roles;
 
 import java.util.Optional;
 import java.util.Set;
@@ -11,7 +11,7 @@ import java.util.Set;
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
-    Optional<Role> findByName(RoleName name);
+    Optional<Role> findByName(Roles name);
 
-    Set<Role> findAllByNameIn(Set<RoleName> names);
+    Set<Role> findAllByNameIn(Set<Roles> names);
 }

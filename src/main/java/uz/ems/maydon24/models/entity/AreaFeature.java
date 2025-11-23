@@ -9,7 +9,7 @@ import uz.ems.maydon24.models.enums.AreaFeatureType;
 
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity

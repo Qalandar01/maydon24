@@ -8,19 +8,19 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import uz.ems.maydon24.models.base.BaseEntity;
-import uz.ems.maydon24.models.enums.RoleName;
+import uz.ems.maydon24.models.enums.Roles;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@SuperBuilder
+@Builder
 @Table(name = "roles")
 public class Role extends BaseEntity implements GrantedAuthority {
 
     @Enumerated(EnumType.STRING)
-    private RoleName name;
+    private Roles name;
 
     @Override
     public String getAuthority() {

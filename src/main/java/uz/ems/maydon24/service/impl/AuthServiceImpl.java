@@ -1,67 +1,86 @@
 package uz.ems.maydon24.service.impl;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.common.errors.ResourceNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
-import uz.ems.maydon24.config.security.JwtService;
-import uz.ems.maydon24.models.dto.response.LoginRes;
-import uz.ems.maydon24.models.dto.response.UserRes;
+import org.springframework.web.ErrorResponseException;
+import uz.ems.maydon24.exeption.CustomException;
+import uz.ems.maydon24.mapper.UserMapper;
+import uz.ems.maydon24.models.dto.request.LoginDto;
+import uz.ems.maydon24.models.dto.request.RegisterDto;
+import uz.ems.maydon24.models.dto.request.UserDto;
+import uz.ems.maydon24.models.dto.response.ErrorResponse;
+import uz.ems.maydon24.models.dto.response.Response;
 import uz.ems.maydon24.models.entity.User;
-import uz.ems.maydon24.models.enums.RoleName;
+import uz.ems.maydon24.models.enums.Roles;
 import uz.ems.maydon24.repository.UserRepository;
-import uz.ems.maydon24.service.face.AuthService;
-
-import java.time.LocalDateTime;
+import uz.ems.maydon24.service.AuthService;
+import uz.ems.maydon24.utils.JwtUtil;
 
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-
-    private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
+    private final JwtUtil jwtUtil;
+    private final UserDetailsService userDetailsService;
+    private final AuthenticationManager authenticationManager;
 
-    @Transactional
     @Override
-    public LoginRes verifyWithCodeAndSendUserData(Integer code, HttpServletResponse response) {
-        User user = userRepository.findOneByVerifyCode(code)
-                .orElseThrow(() -> new RuntimeException("User not found for code: " + code));
+    public Response login(LoginDto dto) {
+        User user = userRepository.findByUsername(dto.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("USER NOT FOUND"));
 
-        if (user.getVerifyCodeExpiration().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Code expired");
+        try {
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword());
+            authenticationManager.authenticate(
+                    authentication
+            );
+        } catch (Exception e) {
+            var error = ErrorResponse.builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message(" INVALID PASSWORD")
+                    .build();
+            return Response.error(error);
         }
-        String token = jwtService.generateToken(user);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
+        String token = jwtUtil.generateToken(userDetails.getUsername());
 
-        jwtService.setJwtCookie(response, token);
-
-        var auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(auth);
-
-        UserRes userRes = UserRes.builder()
-                .id(user.getId())
-                .fullName(user.getFullName())
-                .phoneNumber(user.getPhoneNumber())
-                .isAdmin(user.getRoles().stream().anyMatch(role -> role.getName().equals(RoleName.ROLE_ADMIN)))
-                .build();
-
-        return LoginRes.builder()
-                .token(token)
-                .userRes(userRes)
-                .build();
+        UserDto userDto = userMapper.toDto(user);
+        return Response.success(userDto, token);
     }
 
     @Override
-    public void logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("ll-token", null);
-        cookie.setHttpOnly(true);
-        cookie.setDomain("gourmet.uz");
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        cookie.setAttribute("SameSite", "None");
-        response.addCookie(cookie);
+    public Response updateRole(Long id, Roles role) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "USER NOT FOUND: ID=>%d".formatted(id)));
+        user.setRole(role);
+        userRepository.save(user);
+        return Response.success();
+    }
+
+
+    @Override
+    public Response register(RegisterDto dto) {
+        User user = userRepository.findByUsername(dto.getUsername()).orElse(null);
+        String token = null;
+        if (user == null) {
+            User entity = userMapper.toEntity(dto);
+            entity.setRole(Roles.ROLE_USER);
+            User save = userRepository.save(entity);
+            token = jwtUtil.generateToken(save.getUsername());
+
+            return Response.success(userMapper.toDto(save), token);
+        }
+        var error = ErrorResponse.builder()
+                .code(HttpStatus.BAD_REQUEST.value())
+                .message("USER ALREADY EXISTS")
+                .build();
+        return Response.error(error);
     }
 }
