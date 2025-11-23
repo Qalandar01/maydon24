@@ -6,13 +6,12 @@ import org.springframework.transaction.annotation.Transactional;
 import uz.ems.maydon24.botauth.service.face.UserService;
 import uz.ems.maydon24.models.entity.Role;
 import uz.ems.maydon24.models.entity.User;
-import uz.ems.maydon24.models.enums.RoleName;
+import uz.ems.maydon24.models.enums.Roles;
 import uz.ems.maydon24.repository.RoleRepository;
 import uz.ems.maydon24.repository.UserRepository;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Collections;
 
 @Service("botAuthUserService")
 @RequiredArgsConstructor
@@ -30,7 +29,7 @@ public class UserServiceImpl implements UserService {
 
     private User createNewUser(com.pengrad.telegrambot.model.User telegramUser) {
         // Default role
-        Role roleUser = roleRepository.findByName(RoleName.ROLE_USER)
+        Role roleUser = roleRepository.findByName(Roles.ROLE_USER)
                 .orElseThrow(() -> new RuntimeException("Default role ROLE_USER not found!"));
 
         String fullName = telegramUser.lastName() != null
@@ -41,9 +40,10 @@ public class UserServiceImpl implements UserService {
                 .telegramId(telegramUser.id())
                 .telegramUsername(telegramUser.username())
                 .phoneNumber(telegramUser.id().toString())
-                .fullName(fullName)
+                .firstName(telegramUser.firstName())
+                .lastName(telegramUser.lastName())
                 .visibility(true)
-                .roles(Collections.singleton(roleUser))
+                .role(roleUser.getName())
                 .build();
 
         return userRepository.save(user);
@@ -61,7 +61,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void updateTgUser(Long userId, User updatedUser) {
         userRepository.findById(userId).ifPresent(user -> {
-            user.setFullName(updatedUser.getFullName());
+            user.setFirstName(updatedUser.getFirstName());
+            user.setLastName(updatedUser.getLastName());
             user.setTelegramUsername(updatedUser.getTelegramUsername());
             user.setPhoneNumber(updatedUser.getPhoneNumber());
             userRepository.save(user);

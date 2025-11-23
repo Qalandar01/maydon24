@@ -2,24 +2,24 @@ package uz.ems.maydon24.models.base;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import uz.ems.maydon24.models.entity.User;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
-@SuperBuilder
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
 @MappedSuperclass
-public class BaseEntity {
+@EntityListeners(AuditingEntityListener.class)
+public class BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,10 +30,11 @@ public class BaseEntity {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @LastModifiedBy
-    private Long updatedBy;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by")
     @CreatedBy
-    private Long createdBy;
+    private User createdBy;
 
+    private boolean isDeleted;
 }
+

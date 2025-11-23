@@ -35,7 +35,7 @@ public class MessageHandler implements Consumer<Message> {
             if (user.getVerifyCodeExpiration() != null && user.getVerifyCodeExpiration().isAfter(LocalDateTime.now())) {
                 messageService.sendCode(user, user.getVerifyCode());
 
-            } else messageService.sendStartMsg(user.getTelegramId(), user.getFullName());
+            } else messageService.sendStartMsg(user.getTelegramId(), user.getFirstName() + " " + user.getLastName());
 
         } else log.warn("Unknown message {}", text);
     }

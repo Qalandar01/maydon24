@@ -5,30 +5,34 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import uz.ems.maydon24.models.base.BaseEntity;
+import uz.ems.maydon24.models.enums.Roles;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 @Getter
 @Setter
-@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 @Table(name = "users")
 @SQLRestriction("visibility=true")
 public class User extends BaseEntity implements UserDetails {
 
-    @Column(nullable = false)
     private Long telegramId;
 
     private String telegramUsername;
+    private String username;
+    private String password;
 
-    @Column(nullable = false)
-    private String fullName;
+    private String firstName;
+    private String lastName;
 
     @Column(nullable = false)
     private String phoneNumber;
@@ -43,26 +47,26 @@ public class User extends BaseEntity implements UserDetails {
     @Column(nullable = false)
     private boolean visibility = true;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    private Set<Role> roles;
+    @Enumerated(EnumType.STRING)
+    private Roles role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles;
+        return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + role.name()));
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
     }
 
     @Override
     public boolean isEnabled() {
         return this.visibility;
-    }
-
-    @Override
-    public String getPassword() {
-        return "[PROTECTED]";
-    }
-
-    @Override
-    public String getUsername(){
-        return this.phoneNumber;
     }
 }
