@@ -18,6 +18,7 @@ public class UserMapper {
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
+                .phoneNumber(dto.getPhoneNumber())
                 .build();
     }
 
