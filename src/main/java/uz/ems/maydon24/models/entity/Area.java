@@ -17,12 +17,17 @@ import uz.ems.maydon24.models.enums.AreaType;
 @AllArgsConstructor
 @Entity
 @Table(name = "areas")
-@SQLRestriction("visibility=true")
+@SQLRestriction("is_deleted = false")
 public class Area extends BaseEntity {
 
     private String name;
     private String description;
     private String phoneNumber;
+    private String address;
+    private Double latitude;
+    private Double longitude;
+    @Builder.Default
+    private boolean visibility = true;
     private Integer height;
     private Integer width;
     @Enumerated(EnumType.STRING)

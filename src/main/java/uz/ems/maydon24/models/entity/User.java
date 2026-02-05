@@ -52,7 +52,10 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + role.name()));
+        if (role == null) {
+            return Collections.emptySet();
+        }
+        return Collections.singleton(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override

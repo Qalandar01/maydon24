@@ -13,7 +13,7 @@ import uz.ems.maydon24.models.enums.AreaPriceType;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@SQLRestriction("visibility=true")
+@SQLRestriction("is_deleted = false")
 @Table(name = "area_price")
 public class AreaPrice extends BaseEntity {
 

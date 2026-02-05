@@ -34,7 +34,7 @@ public class AreaController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<AreaResponseDto> getById(@RequestParam Long id) {
+    public ResponseEntity<AreaResponseDto> getById(@PathVariable Long id) {
         return ResponseEntity.ok(areaService.getById(id));
     }
 

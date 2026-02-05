@@ -8,6 +8,10 @@ public class AreaUpdateDto {
     private String name;
     private String description;
     private String phoneNumber;
+    private String address;
+    private Double latitude;
+    private Double longitude;
+    private Boolean visibility;
     private Integer height;
     private Integer width;
     private AreaType areaType;

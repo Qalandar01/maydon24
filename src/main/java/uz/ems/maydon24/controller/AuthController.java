@@ -2,6 +2,7 @@ package uz.ems.maydon24.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uz.ems.maydon24.models.dto.request.LoginDto;
 import uz.ems.maydon24.models.dto.request.RegisterDto;
@@ -22,6 +23,7 @@ public class AuthController {
     }
 
     @PutMapping("/updateRole")
+    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
     public Response updateRole(@RequestParam("id") Long id,
                                @RequestParam("role") Roles role) {
         return authService.updateRole(id, role);
