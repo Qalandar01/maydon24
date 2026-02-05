@@ -1,127 +1,72 @@
 package uz.ems.maydon24.exeption;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-import uz.ems.maydon24.models.dto.request.Empty;
-import uz.ems.maydon24.models.dto.response.ErrorResponse;
-import uz.ems.maydon24.models.dto.response.Response;
+import org.springframework.web.bind.annotation.*;
+import uz.ems.maydon24.response.ErrorCode;
+import uz.ems.maydon24.response.ErrorResponse;
+import uz.ems.maydon24.response.ValidationErrorResponse;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-
-@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleValidationErrors(MethodArgumentNotValidException ex) {
-        List<String> errors = ex.getBindingResult().getFieldErrors()
-                .stream().map((e) -> e.getField() + " " + e.getDefaultMessage()).toList();
-        StringBuilder sb = new StringBuilder();
-        errors.forEach(s -> sb.append(s).append(System.getProperty("line.separator")));
-        String errorMessage = !sb.toString().isEmpty() ? sb.toString() : ex.getMessage();
-
-        var error = ErrorResponse.builder()
-                .code(HttpStatus.BAD_REQUEST.value())
-                .message(errorMessage)
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleNotFound(NotFoundException ex) {
+        return ErrorResponse.builder()
+                .success(false)
+                .message(ex.getMessage())
+                .errorCode(ErrorCode.NOT_FOUND)
                 .build();
-
-        var responseData = Response.builder()
-                .error(error)
-                .data(Empty.builder().build())
-                .build();
-        return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
 
-    @ExceptionHandler(InvalidFormatException.class)
-    public ResponseEntity<Object> handleInvalidFormatException(InvalidFormatException ex) {
-        // Handle the InvalidFormatException here
-        String errorMessage = "Invalid format for field " + ex.getPath().get(0).getFieldName();
-        var error = ErrorResponse.builder()
-                .code(HttpStatus.BAD_REQUEST.value())
-                .message(errorMessage)
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequest(BadRequestException ex) {
+        return ErrorResponse.builder()
+                .success(false)
+                .message(ex.getMessage())
+                .errorCode(ErrorCode.BAD_REQUEST)
                 .build();
+    }
 
-        var responseData = Response.builder()
-                .error(error)
-                .data(Empty.builder().build())
+    @ExceptionHandler(AlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleExists(AlreadyExistsException ex) {
+        return ErrorResponse.builder()
+                .success(false)
+                .message(ex.getMessage())
+                .errorCode(ErrorCode.ALREADY_EXISTS)
                 .build();
-        return new ResponseEntity<>(responseData, HttpStatus.OK);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ValidationErrorResponse handleValidation(MethodArgumentNotValidException ex) {
+
+        Map<String, String> errors = new HashMap<>();
+
+        ex.getBindingResult().getFieldErrors().forEach(fieldError ->
+                errors.put(fieldError.getField(), fieldError.getDefaultMessage()));
+
+        return ValidationErrorResponse.builder()
+                .success(false)
+                .message("Validation error")
+                .fieldErrors(errors)
+                .build();
     }
 
     @ExceptionHandler(Exception.class)
-    public final ResponseEntity<?> handleGeneralExceptions(Exception ex) {
-        var error = ErrorResponse.builder()
-                .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleOther(Exception ex) {
+        return ErrorResponse.builder()
+                .success(false)
                 .message(ex.getMessage())
+                .errorCode(ErrorCode.INTERNAL_ERROR)
                 .build();
-        var responseData = Response.builder()
-                .error(error)
-                .data(Empty.builder().build())
-                .build();
-        return new ResponseEntity<>(responseData, HttpStatus.OK);
-    }
-
-    @ExceptionHandler(RuntimeException.class)
-    public final ResponseEntity<?> handleRuntimeExceptions(Exception ex) {
-        var error = ErrorResponse.builder()
-                .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .message(ex.getMessage())
-                .build();
-
-        var responseData = Response.builder()
-                .error(error)
-                .data(Empty.builder().build())
-                .build();
-        return new ResponseEntity<>(responseData, HttpStatus.OK);
-    }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public final ResponseEntity<?> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        var error = ErrorResponse.builder()
-                .code(HttpStatus.BAD_REQUEST.value())
-                .message(ex.getMessage())
-                .build();
-
-        var responseData = Response.builder()
-                .error(error)
-                .data(Empty.builder().build())
-                .build();
-        return new ResponseEntity<>(responseData, HttpStatus.OK);
-    }
-
-    @ExceptionHandler(JsonProcessingException.class)
-    public final ResponseEntity<?> handleJsonProcessingException(JsonProcessingException ex) {
-        var error = ErrorResponse.builder()
-                .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .message("Error while converting object to string: " + ex.getMessage())
-                .build();
-
-        var responseData = Response.builder()
-                .error(error)
-                .data(Empty.builder().build())
-                .build();
-        return new ResponseEntity<>(responseData, HttpStatus.OK);
-    }
-
-    @ExceptionHandler(CustomException.class)
-    public ResponseEntity<?> handleCustomException(CustomException ex) {
-        log.error("ErrorStatus: {}, Message: {} ", ex.getCode(), ex.getMessage());
-        var error = ErrorResponse.builder()
-                .code(ex.getCode())
-                .message(ex.getMessage())
-                .build();
-        var response = Response.builder()
-                .error(error)
-                .data(Empty.builder().build())
-                .build();
-        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

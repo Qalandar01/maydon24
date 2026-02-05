@@ -5,31 +5,35 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Component
 public class JwtUtil {
 
-    private static final String SECRET = "wgZLShDJ98aQVgQFtdQ0+sYrV5zqK6+fJiOLtU1YZKxYEdUghMFq93sdUNhU+aWoJlD80I5gKn+Rz8UhDZQhzA==";
-
     private final UserDetailsService userDetailsService;
+    private final String secret;
+    private final long tokenLifetimeDays;
 
-    public JwtUtil(UserDetailsService userDetailsService) {
+    public JwtUtil(
+            UserDetailsService userDetailsService,
+            @Value("${jwt.secret.key}") String secret,
+            @Value("${jwt.token.lifetime.days:1}") long tokenLifetimeDays
+    ) {
         this.userDetailsService = userDetailsService;
+        this.secret = secret;
+        this.tokenLifetimeDays = tokenLifetimeDays;
     }
 
     private Key getSignKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET);
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -46,7 +50,7 @@ public class JwtUtil {
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
+                .setExpiration(new Date(System.currentTimeMillis() + tokenLifetimeDays * 24 * 60 * 60 * 1000))
                 .signWith(getSignKey(), SignatureAlgorithm.HS512)
                 .compact();
     }

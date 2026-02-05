@@ -14,7 +14,7 @@ import uz.ems.maydon24.models.enums.AreaFeatureType;
 @AllArgsConstructor
 @Entity
 @Table(name = "area_features")
-@SQLRestriction("visibility=true")
+@SQLRestriction("is_deleted = false")
 public class AreaFeature extends BaseEntity {
 
     @ManyToOne

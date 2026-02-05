@@ -17,7 +17,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@SQLRestriction("visibility=true")
+@SQLRestriction("is_deleted = false")
 @Table(name = "area_schedule")
 public class AreaSchedule extends BaseEntity {
 

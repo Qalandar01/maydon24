@@ -1,17 +1,81 @@
 package uz.ems.maydon24.service;
 
-
-import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Service;
+import uz.ems.maydon24.exeption.CustomException;
+import uz.ems.maydon24.exeption.ResourceNotFoundException;
+import uz.ems.maydon24.mapper.UserMapper;
 import uz.ems.maydon24.models.dto.request.LoginDto;
 import uz.ems.maydon24.models.dto.request.RegisterDto;
+import uz.ems.maydon24.models.dto.request.UserDto;
+import uz.ems.maydon24.models.dto.response.ErrorResponse;
 import uz.ems.maydon24.models.dto.response.Response;
+import uz.ems.maydon24.models.entity.User;
 import uz.ems.maydon24.models.enums.Roles;
+import uz.ems.maydon24.repository.UserRepository;
+import uz.ems.maydon24.utils.JwtUtil;
 
-@Component
-public interface AuthService {
-    Response login(LoginDto dto);
+@Service
+@RequiredArgsConstructor
+public class AuthService  {
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
+    private final JwtUtil jwtUtil;
+    private final UserDetailsService userDetailsService;
+    private final AuthenticationManager authenticationManager;
 
-    Response updateRole(Long id, Roles role);
+    public Response login(LoginDto dto) {
+        User user = userRepository.findByUsername(dto.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("USER NOT FOUND"));
 
-    Response register(RegisterDto dto);
+        try {
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword());
+            authenticationManager.authenticate(
+                    authentication
+            );
+        } catch (Exception e) {
+            var error = ErrorResponse.builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message(" INVALID PASSWORD")
+                    .build();
+            return Response.error(error);
+        }
+        UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
+        String token = jwtUtil.generateToken(userDetails.getUsername());
+
+        UserDto userDto = userMapper.toDto(user);
+        return Response.success(userDto, token);
+    }
+
+    public Response updateRole(Long id, Roles role) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new CustomException(HttpStatus.NOT_FOUND, "USER NOT FOUND: ID=>%d".formatted(id)));
+        user.setRole(role);
+        userRepository.save(user);
+        return Response.success();
+    }
+
+
+    public Response register(RegisterDto dto) {
+        User user = userRepository.findByUsername(dto.getUsername()).orElse(null);
+        String token = null;
+        if (user == null) {
+            User entity = userMapper.toEntity(dto);
+            entity.setRole(Roles.ROLE_USER);
+            User save = userRepository.save(entity);
+            token = jwtUtil.generateToken(save.getUsername());
+
+            return Response.success(userMapper.toDto(save), token);
+        }
+        var error = ErrorResponse.builder()
+                .code(HttpStatus.BAD_REQUEST.value())
+                .message("USER ALREADY EXISTS")
+                .build();
+        return Response.error(error);
+    }
 }
