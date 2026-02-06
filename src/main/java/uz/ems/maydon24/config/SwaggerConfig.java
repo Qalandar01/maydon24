@@ -1,31 +1,20 @@
 package uz.ems.maydon24.config;
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import io.swagger.v3.oas.annotations.servers.Server;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.servers.Server;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Value;
 
 
 @Configuration
-@OpenAPIDefinition(
-        info = @Info(
-                title = "Maydon24", // Optional: Qo'shimcha ma'lumot berish uchun
-                version = "2.0", // OpenAPI versiyasi noto'g'ri emas, faqat ma'lumot sifatida
-                description = "API Documentation"
-        ),
-        servers = {
-                @Server(url = "http://localhost:8080", description = "Local Server"),
-        },
-        security = @SecurityRequirement(name = "bearerAuth")
-)
-
 @SecurityScheme(
         name = "bearerAuth",
         type = SecuritySchemeType.HTTP,
@@ -34,7 +23,18 @@ import org.springframework.context.annotation.Configuration;
         in = SecuritySchemeIn.HEADER,
         paramName = "Authorization"
 )
+@SecurityRequirement(name = "bearerAuth")
 public class SwaggerConfig {
+    @Bean
+    public OpenAPI openAPI(@Value("${app.swagger.server-url:http://localhost:8080}") String serverUrl) {
+        return new OpenAPI()
+                .info(new Info()
+                        .title("Maydon24")
+                        .version("2.0")
+                        .description("API Documentation"))
+                .addServersItem(new Server().url(serverUrl).description("API Server"));
+    }
+
     @Bean
     public OperationCustomizer customize() {
         return (operation, handlerMethod) -> {

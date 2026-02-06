@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    container_name: maydon24-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-maydon24_db}
+      POSTGRES_USER: ${SPRING_DATASOURCE_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-root123}
+    ports:
+      - "5432:5432"
+    volumes:
+      - maydon24-db:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+    container_name: maydon24
+    depends_on:
+      - db
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+volumes:
+  maydon24-db:
