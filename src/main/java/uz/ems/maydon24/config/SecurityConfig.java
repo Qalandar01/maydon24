@@ -24,9 +24,11 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.beans.factory.annotation.Value;
 import uz.ems.maydon24.filter.JwtAuthenticationFilter;
 import uz.ems.maydon24.service.impl.UserDetailsServiceImpl;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -98,15 +100,24 @@ public class SecurityConfig {
 
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource(
+            @Value("${app.cors.allowed-origins:*}") String allowedOrigins
+    ) {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(
-                "http://localhost:8080"
-        ));
+        List<String> origins = Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList();
+        if (origins.size() == 1 && "*".equals(origins.get(0))) {
+            configuration.addAllowedOriginPattern("*");
+            configuration.setAllowCredentials(false);
+        } else {
+            configuration.setAllowedOrigins(origins);
+            configuration.setAllowCredentials(true);
+        }
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setAllowedHeaders(List.of("*"));
         configuration.setExposedHeaders(List.of("Authorization", "Content-Disposition"));
-        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

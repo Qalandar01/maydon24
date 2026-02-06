@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+  app:
+    image: ${IMAGE_NAME:-mavlonakmalov/maydon24:latest}
+    container_name: maydon24
+    env_file:
+      - .env
+    ports:
+      - "8081:8080"
+    networks:
+      - maydon24-net
+    restart: always
+
+networks:
+  maydon24-net:
+    external: true
