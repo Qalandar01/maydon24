@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/maydon24:latest
+  IMAGE_NAME: mavlonakmalov/maydon24:latest
   APP_DIR: /opt/maydon24
   APP_NAME: maydon24
   APP_PORT: 8081
@@ -65,7 +65,7 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           script: |
             set -e
-            for i in {1..30}; do
+            for i in {1..60}; do
               if curl -fsS http://localhost:${{ env.APP_PORT }}/actuator/health | grep -q '"status":"UP"'; then
                 echo "Health check OK"
                 exit 0
