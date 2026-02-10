@@ -66,7 +66,7 @@ jobs:
           script: |
             set -e
             for i in {1..60}; do
-              if curl -fsS http://localhost:${{ env.APP_PORT }}/health | grep -q '"status":"UP"'; then
+              if curl -fsS -H "X-Health-Secret: ${{ secrets.HEALTH_SECRET }}" http://localhost:${{ env.APP_PORT }}/health | grep -q '"status":"UP"'; then
                 echo "Health check OK"
                 exit 0
               fi
